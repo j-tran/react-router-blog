@@ -1,11 +1,12 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
 import { Field, reduxForm } from 'redux-form';
 import { connect } from 'react-redux';
-import { Link } from 'react-router';
+import { Link, browserHistory } from 'react-router';
 import { createPost } from '../actions/index';
 
 // user defined "component" for Field objects
-const renderField = ({ input, label, type, meta: { touched, error, warning } }) => ( // If input is touched and has validation errors, add has-danger to it
+// If input is touched and has validation errors, add 'has-danger' to styling
+const renderField = ({ input, label, type, meta: { touched, error, warning } }) => (
   <div className={`form-group ${touched && error ? 'has-danger' : ''}`}>
     <label htmlFor={label}>{label}</label>
     <input {...input} className="form-control" type={type} />
@@ -30,12 +31,9 @@ function validate(values) {
 }
 
 class PostsNew extends Component {
-  static contextTypes = {
-    router: PropTypes.object, // Need to do this since react-router supports functionality
-  };                          // for changings routes via functions
-
-  onHandleSubmit = (formValues) => { // function uses the action creator to send to backend
-    this.props.createPost(formValues).then(() => { this.context.router.push('/'); });
+// action-creator creates a promise, and if fulfilled we will go back to index
+  onHandleSubmit = (formValues) => {
+    this.props.createPost(formValues).then(() => { browserHistory.push('/'); });
   }
 
   render() {
@@ -47,7 +45,7 @@ class PostsNew extends Component {
         <Field label="Categories" name="categories" type="text" component={renderField} />
         <Field label="Content" name="content" type="text" component={renderTextArea} />
         <button type="submit" className="btn btn-primary" disabled={this.props.invalid}> Submit</button>
-        <Link to="/" className="btn btn-danger">Cancel</Link>
+        <Link to="/" className="btn btn-danger left-spacing">Cancel</Link>
       </form>
     );
   }
